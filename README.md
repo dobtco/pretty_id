@@ -40,7 +40,7 @@ end
 
 Pretty IDs are generated using the [Bignum#to_s](http://www.ruby-doc.org/core-2.1.1/Bignum.html#method-i-to_s) method, and since we're seeding with a random value, there's no guarantee that they'll always be 8 characters long. However, the IDs are always checked against existing values in the database to ensure uniqueness.
 
-[0]: http://img.shields.io/travis/dobtco/pretty_id.svg
-[1]: http://img.shields.io/codeclimate/github/dobtco/pretty_id.svg
-[2]: http://img.shields.io/coveralls/dobtco/pretty_id.svg
-[3]: http://img.shields.io/gem/v/pretty_id.svg
+[0]: https://img.shields.io/travis/dobtco/pretty_id.svg
+[1]: https://img.shields.io/codeclimate/github/dobtco/pretty_id.svg
+[2]: https://img.shields.io/coveralls/dobtco/pretty_id.svg
+[3]: https://img.shields.io/gem/v/pretty_id.svg
