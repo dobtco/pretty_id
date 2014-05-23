@@ -5,6 +5,21 @@ class UserWithPrettyId < ActiveRecord::Base
   has_pretty_id
 end
 
+class UserWithLongerPrettyId < ActiveRecord::Base
+  self.table_name = 'users'
+  has_pretty_id length: 16
+end
+
+class UserWithUrlsafeBase64PrettyId < ActiveRecord::Base
+  self.table_name = 'users'
+  has_pretty_id method: :urlsafe_base64
+end
+
+class UserWithLongerUrlsafeBase64PrettyId < ActiveRecord::Base
+  self.table_name = 'users'
+  has_pretty_id method: :urlsafe_base64, length: 32
+end
+
 class UserWithPrettyIdAlt < ActiveRecord::Base
   self.table_name = 'users'
   has_pretty_id column: :pretty_id_alt
@@ -34,12 +49,60 @@ describe PrettyId do
   describe 'preventing duplicates' do
     before do
       UserWithPrettyId.stub(:exists?).and_return(true, false)
-      UserWithPrettyId.any_instance.stub(:rand).and_return(1, 2)
+      UserWithPrettyId.stub(:rand).and_return(1, 2)
     end
 
     it 'prevents duplicates' do
       u = UserWithPrettyId.create
-      expect(u.pretty_id).to eq '2'
+      expect(u.pretty_id).to eq 'cccccccc'
+    end
+  end
+
+  describe 'method = pretty' do
+    it 'assigns 8 characters' do
+      u = UserWithPrettyId.new
+      u.generate_pretty_id
+      expect(u.pretty_id.length).to eq 8
+    end
+
+    it 'assigns longer ids' do
+      u = UserWithLongerPrettyId.new
+      u.generate_pretty_id
+      expect(u.pretty_id.length).to eq 16
+    end
+  end
+
+  describe 'method = urlsafe_base64' do
+    it 'assigns ~21 characters' do
+      u = UserWithUrlsafeBase64PrettyId.new
+      u.generate_pretty_id
+      expect(u.pretty_id.length).to eq be_within(1).of(21)
+    end
+
+    it 'assigns more characters' do
+      u = UserWithLongerUrlsafeBase64PrettyId.new
+      u.generate_pretty_id
+      expect(u.pretty_id.length).to eq be_within(1).of(32)
+    end
+  end
+
+  describe '#regenerate_pretty_id' do
+    let(:user) { UserWithPrettyId.create }
+
+    it 'regenerates' do
+      expect {
+        user.regenerate_pretty_id
+      }.to change { user.pretty_id }
+    end
+
+    it 'does not call save' do
+      expect(user).to_not receive(:save)
+      user.regenerate_pretty_id
+    end
+
+    it 'has a dangerous counterpart' do
+      expect(user).to receive(:save)
+      user.regenerate_pretty_id!
     end
   end
 end

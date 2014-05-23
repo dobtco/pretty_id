@@ -28,17 +28,41 @@ class Book < ActiveRecord::Base
 end
 ```
 
+## Generation methods
+
+#### :pretty (default)
+```ruby
+chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('0'..'9').to_a
+Array.new(options[:length]) { chars[rand(chars.length)] }.join
+```
+
+#### :urlsafe_base64
+```ruby
+SecureRandom.urlsafe_base64(options[:length] / 1.333)
+```
+
 ## Options
 ```ruby
 class Book < ActiveRecord::Base
-  has_pretty_id column: :another_string_column,   # default: :pretty_id
+  has_pretty_id method: :urlsafe_base64,          # default: :pretty
+                column: :another_string_column,   # default: :pretty_id
                 length: 12                        # default: 8
 end
 ```
 
-## Warnings
+## Instance methods
 
-Pretty IDs are generated using the [Bignum#to_s](http://www.ruby-doc.org/core-2.1.1/Bignum.html#method-i-to_s) method, and since we're seeding with a random value, there's no guarantee that they'll always be 8 characters long. However, the IDs are always checked against existing values in the database to ensure uniqueness.
+#### `#regenerate_#{column_name}`
+```ruby
+user = User.create
+user.pretty_id # => 'a0923sdf'
+user.regenerate_pretty_id
+user.pretty_id # => 'lf91fs9s'
+```
+
+#### `#regenerate_#{column_name}!`
+Same as above, but also calls `save` on the record
+
 
 [0]: https://img.shields.io/travis/dobtco/pretty_id.svg
 [1]: https://img.shields.io/codeclimate/github/dobtco/pretty_id.svg
