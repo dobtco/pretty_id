@@ -46,6 +46,12 @@ describe PrettyId do
     expect(u.pretty_id_alt).to be_present
   end
 
+  it 'fails on unknown method' do
+    expect {
+      UserWithPrettyId.send(:has_pretty_id, method: :foobar)
+    }.to raise_error(/Unknown \:method/)
+  end
+
   describe 'preventing duplicates' do
     before do
       UserWithPrettyId.stub(:exists?).and_return(true, false)
