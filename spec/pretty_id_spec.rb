@@ -88,13 +88,13 @@ describe PrettyId do
     it 'assigns ~21 characters' do
       u = UserWithUrlsafeBase64PrettyId.new
       u.generate_pretty_id
-      expect(u.pretty_id.length).to eq be_within(1).of(21)
+      expect(u.pretty_id.length).to be_within(1).of(21)
     end
 
     it 'assigns more characters' do
       u = UserWithLongerUrlsafeBase64PrettyId.new
       u.generate_pretty_id
-      expect(u.pretty_id.length).to eq be_within(1).of(32)
+      expect(u.pretty_id.length).to be_within(1).of(32)
     end
   end
 
