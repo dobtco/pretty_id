@@ -25,6 +25,12 @@ class UserWithPrettyIdAlt < ActiveRecord::Base
   has_pretty_id column: :pretty_id_alt
 end
 
+class UserWithTwoPrettyIds < ActiveRecord::Base
+  self.table_name = 'users'
+  has_pretty_id
+  has_pretty_id column: :pretty_id_alt
+end
+
 describe PrettyId do
   it 'assigns before creation' do
     u = UserWithPrettyId.new
@@ -109,6 +115,26 @@ describe PrettyId do
     it 'has a dangerous counterpart' do
       expect(user).to receive(:save)
       user.regenerate_pretty_id!
+    end
+  end
+
+  describe 'two pretty_ids' do
+    let(:user) { UserWithTwoPrettyIds.create }
+
+    it 'assigns both' do
+      expect(user.pretty_id).to be_present
+      expect(user.pretty_id_alt).to be_present
+      expect(user.pretty_id).to_not eq user.pretty_id_alt
+    end
+
+    it 'can regenerate one but not the other' do
+      expect {
+        user.regenerate_pretty_id
+      }.to change { user.pretty_id }
+
+      expect {
+        user.regenerate_pretty_id_alt
+      }.to_not change { user.pretty_id }
     end
   end
 end
