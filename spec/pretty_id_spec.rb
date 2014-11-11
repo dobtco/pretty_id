@@ -5,6 +5,11 @@ class UserWithPrettyId < ActiveRecord::Base
   has_pretty_id
 end
 
+class UserWithNonUniquePrettyId < ActiveRecord::Base
+  self.table_name = 'users'
+  has_pretty_id uniq: false
+end
+
 class UserWithLongerPrettyId < ActiveRecord::Base
   self.table_name = 'users'
   has_pretty_id length: 16
@@ -67,6 +72,18 @@ describe PrettyId do
     it 'prevents duplicates' do
       u = UserWithPrettyId.create
       expect(u.pretty_id).to eq 'cccccccc'
+    end
+
+    context 'uniq = false' do
+      before do
+        UserWithNonUniquePrettyId.stub(:exists?).and_return(true, false)
+        UserWithNonUniquePrettyId.stub(:rand).and_return(1, 2)
+      end
+
+      it 'prevents duplicates' do
+        u = UserWithNonUniquePrettyId.create
+        expect(u.pretty_id).to eq 'bccccccc'
+      end
     end
   end
 

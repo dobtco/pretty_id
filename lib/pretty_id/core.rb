@@ -8,7 +8,8 @@ module PrettyId
       def has_pretty_id(options = {})
         default_options = {
           column: :pretty_id,
-          method: :pretty
+          method: :pretty,
+          uniq: true
         }
 
         options = default_options.merge(options)
@@ -32,6 +33,7 @@ module PrettyId
         define_method(:"generate_#{options[:column]}") do
           new_pretty_id = loop do
             random_pretty_id = options[:generate_proc].call
+            break random_pretty_id if !options[:uniq]
             exists_hash = {}
             exists_hash[options[:column]] = random_pretty_id
             break random_pretty_id unless self.class.exists?(exists_hash)

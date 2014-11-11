@@ -46,7 +46,8 @@ SecureRandom.urlsafe_base64(options[:length] / 1.333)
 class Book < ActiveRecord::Base
   has_pretty_id method: :urlsafe_base64,          # default: :pretty
                 column: :another_string_column,   # default: :pretty_id
-                length: 12                        # default: 8
+                length: 12,                       # default: 8
+                uniq: false                       # default: true
 end
 ```
 
